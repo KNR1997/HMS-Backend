@@ -2,7 +2,7 @@ import uuid
 
 from django.db import models
 
-from common.models import BaseModel, SimpleModel
+from common.models import BaseModel
 
 
 # Create your models here.
@@ -23,6 +23,7 @@ class RoomCategory(BaseModel):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     name = models.CharField(max_length=100)
     slug = models.CharField(max_length=100, unique=True)
+    image = models.JSONField(default=dict, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     capacity = models.PositiveIntegerField()
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
@@ -35,6 +36,8 @@ class Room(BaseModel):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
     category = models.ForeignKey(RoomCategory, on_delete=models.CASCADE)
+    image = models.JSONField(default=dict, blank=True, null=True)
+    gallery = models.JSONField(default=list, blank=True, null=True)
     room_number = models.CharField(max_length=10, unique=True)
     is_available = models.BooleanField(default=True)
 

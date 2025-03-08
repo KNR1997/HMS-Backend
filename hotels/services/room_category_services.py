@@ -1,4 +1,5 @@
 import decimal
+import json
 from typing import List
 
 from django.db import transaction
@@ -12,12 +13,14 @@ from hotels.models import RoomCategory
 @transaction.atomic
 def room_category_create(*, name: str,
                          slug: str,
+                         image: json = None,
                          description: str = None,
                          capacity: int,
                          price_per_night: decimal,
                          ) -> RoomCategory:
     room = RoomCategory.objects.create(name=name,
                                        slug=slug,
+                                       image=image,
                                        description=description,
                                        capacity=capacity,
                                        price_per_night=price_per_night,
@@ -31,6 +34,7 @@ def room_category_update(*, room_category: RoomCategory, data, updated_by: User)
     non_side_effect_fields: List[str] = [
         "name",
         "slug",
+        "image",
         "description",
         "capacity",
         "price_per_night",

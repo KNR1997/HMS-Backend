@@ -11,7 +11,7 @@ class ClientUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['permissions', 'role']
+        fields = ['permissions', 'role', 'username']
 
     # def get_permissions(self, obj):
     #     # Return only the group names
@@ -25,6 +25,7 @@ class ClientUserSerializer(serializers.ModelSerializer):
         # Return only the group names
         return ['super_admin']
 
+
 class MeSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
 
@@ -34,3 +35,15 @@ class MeSerializer(serializers.ModelSerializer):
 
     def get_name(self, obj):
         return obj.get_full_name()
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=8)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user

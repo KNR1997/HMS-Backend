@@ -5,14 +5,15 @@ from accounts.views.login_views import (
     CustomTokenObtainPairView,
     CustomTokenRefreshView,
     CustomTokenVerifyView,
-    LogoutView,
+    LogoutView, RegisterView,
 )
 
 urlpatterns = [
-    path('token', CustomTokenObtainPairView.as_view()),
-    path('jwt/refresh/', CustomTokenRefreshView.as_view()),
-    path('jwt/verify/', CustomTokenVerifyView.as_view()),
-    path('logout/', LogoutView.as_view()),
+    path('register/',       RegisterView.as_view(), name='register'),
+    path('token',           CustomTokenObtainPairView.as_view()),
+    path('jwt/refresh/',    CustomTokenRefreshView.as_view()),
+    path('jwt/verify/',     CustomTokenVerifyView.as_view()),
+    path('logout/',         LogoutView.as_view()),
 
     path('me/', user_views.me, name='me'),
 

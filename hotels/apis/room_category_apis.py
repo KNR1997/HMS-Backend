@@ -23,6 +23,7 @@ class RoomCategoryListApi(APIView):
         id = serializers.UUIDField(required=True)
         name = serializers.CharField(required=True)
         slug = serializers.CharField(required=True)
+        image =serializers.JSONField(required=True)
         description = serializers.CharField(required=True)
         capacity = serializers.IntegerField(required=True)
         price_per_night = serializers.DecimalField(required=True, max_digits=10, decimal_places=2)
@@ -54,6 +55,7 @@ class RoomCategoryDetailApi(APIView):
         id = serializers.CharField()
         name = serializers.CharField()
         slug = serializers.CharField()
+        image = serializers.JSONField()
         description = serializers.CharField()
         capacity = serializers.IntegerField()
         price_per_night = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -73,6 +75,7 @@ class RoomCategoryCreateApi(APIView):
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField(required=True)
         slug = serializers.CharField(required=True)
+        image = serializers.JSONField()
         description = serializers.CharField(required=True, allow_null=True, allow_blank=True)
         capacity = serializers.CharField(required=True)
         price_per_night = serializers.CharField(required=True)
