@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'order.apps.OrderConfig',
     'import_export',
     'corsheaders',
     'rest_framework',
@@ -46,8 +45,6 @@ INSTALLED_APPS = [
     'accounts',
     'bookings',
     'hotels',
-    'products',
-    'shops',
     'common',
     'configurations',
 ]

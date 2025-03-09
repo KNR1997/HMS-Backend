@@ -1,5 +1,6 @@
 from django.urls import path
 
+from accounts.apis import user_apis
 from accounts.views import user_views
 from accounts.views.login_views import (
     CustomTokenObtainPairView,
@@ -16,5 +17,7 @@ urlpatterns = [
     path('logout/',         LogoutView.as_view()),
 
     path('me/', user_views.me, name='me'),
+
+    path('users/',          user_apis.UserListApi.as_view()),
 
 ]
