@@ -35,8 +35,30 @@ class UserAccountManager(BaseUserManager):
         return user
 
 
+class Permission(models.Model):
+    class PermissionType(models.TextChoices):
+        SUPER_ADMIN = 'super_admin', _('Super Admin')
+        STORE_OWNER = 'store_owner', _('Store Owner')
+        STAFF = 'staff', _('Staff')
+
+    permission_type = models.CharField(
+        max_length=20,
+        choices=PermissionType.choices,
+        unique=True,
+        verbose_name=_('Permission Type')
+    )
+
+    def __str__(self):
+        return self.get_permission_type_display()
+
+
 class User(AbstractUser):
-    pass
+    permissions = models.ManyToManyField(
+        Permission,
+        related_name='users',
+        blank=True,
+        verbose_name=_('Permissions')
+    )
 
 
 class Customer(models.Model):

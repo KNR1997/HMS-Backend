@@ -18,3 +18,11 @@ def user_list(*, filters=None) -> QuerySet[User]:
     qs = User.objects.all()
 
     return qs
+
+
+def admin_list(*, filters=None) -> QuerySet[User]:
+    filters = filters or {}
+
+    qs = User.objects.filter(is_staff=True)
+
+    return qs
