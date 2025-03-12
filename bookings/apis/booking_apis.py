@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.http import Http404
 from rest_framework import serializers, status
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,6 +13,29 @@ from common.utils import parse_search_query, get_paginated_response
 class ProcessBookingApi(APIView):
     class InputSerializer(serializers.Serializer):
         user_id = serializers.UUIDField(required=True)
+        check_in = serializers.CharField(required=True)
+        check_out = serializers.CharField(required=True)
+        booking_items = serializers.ListField(required=True)
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.UUIDField()
+
+    @transaction.atomic
+    def post(self, request):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        booking = process_booking(**serializer.validated_data)
+
+        return Response(self.OutputSerializer(booking).data)
+
+
+class ProcessBookingFromAdminApi(APIView):
+    permission_classes = [IsAdminUser]
+
+    class InputSerializer(serializers.Serializer):
+        customer_name = serializers.CharField(required=True)
+        customer_id_number = serializers.CharField(required=True)
         check_in = serializers.CharField(required=True)
         check_out = serializers.CharField(required=True)
         booking_items = serializers.ListField(required=True)

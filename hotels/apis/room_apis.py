@@ -23,6 +23,8 @@ class RoomListApi(APIView):
         category = serializers.CharField(required=True)
         room_number = serializers.CharField(required=True)
         is_available = serializers.BooleanField(required=True)
+        price = serializers.DecimalField(required=True, source='category.price_per_night', max_digits=10, decimal_places=2)
+        image = serializers.JSONField(required=True, source='category.image')
 
     def get(self, request):
         # Extract `search` query parameter

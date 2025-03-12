@@ -1,16 +1,16 @@
 from rest_framework import serializers
+from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
 
-from accounts.selectors import user_list, admin_list
+from accounts.selectors import admin_list
 from common.utils import parse_search_query, get_paginated_response
 
 
 class AdminListApi(APIView):
-    # permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
     class FilterSerializer(serializers.Serializer):
         id = serializers.IntegerField(required=False)
-        # name = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.UUIDField(required=True)
@@ -22,7 +22,8 @@ class AdminListApi(APIView):
         is_active = serializers.CharField(required=True)
         permissions = serializers.SerializerMethodField()
 
-        def get_permissions(self, obj):
+        @staticmethod
+        def get_permissions(obj):
             # Return a list of permission types for the user
             return [
                 {"name": permission.permission_type, "index": index}

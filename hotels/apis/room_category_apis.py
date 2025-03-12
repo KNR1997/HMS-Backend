@@ -144,7 +144,7 @@ class RoomCategoryUpdateApi(APIView):
         # Usually, this is how we approach things, when building APIs at first
         # But at the very moment when we need to make a change to the output,
         # that's specific to this API, we'll introduce a separate OutputSerializer just for this API
-        data = RoomCategoryDetailApi.OutputSerializer(room_category).data
+        data = AdminRoomCategoryDetailApi.OutputSerializer(room_category).data
 
         return Response(data)
 

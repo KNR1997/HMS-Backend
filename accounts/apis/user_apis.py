@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.selectors import user_list
@@ -43,3 +44,20 @@ class UserListApi(APIView):
             queryset=users,
             request=request,
         )
+
+
+class UserDetailApi(APIView):
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.CharField()
+        username = serializers.CharField(required=False)
+        first_name = serializers.CharField(required=False)
+        last_name = serializers.CharField(required=False)
+        email = serializers.EmailField(required=False)
+
+    def get(self, request):
+        # Get the currently authenticated user
+        requested_user = request.user
+
+        data = self.OutputSerializer(requested_user).data
+
+        return Response(data)

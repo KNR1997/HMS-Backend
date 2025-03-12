@@ -15,7 +15,9 @@ from hotels.selectors import room_get_by_room_number
 
 
 @transaction.atomic
-def process_booking(*, user_id: uuid,
+def process_booking(*, user_id: uuid = None,
+                    customer_name: str = None,
+                    customer_id_number: str = None,
                     check_in: str,
                     check_out: str,
                     booking_items: list[str],
@@ -25,6 +27,8 @@ def process_booking(*, user_id: uuid,
 
     # Create the booking
     booking = booking_create(user_id=user_id,
+                             customer_name=customer_name,
+                             customer_id_number=customer_id_number,
                              check_in=check_in,
                              check_out=check_out,
                              total_price=total_price,
@@ -48,6 +52,8 @@ def process_booking(*, user_id: uuid,
 
 @transaction.atomic
 def booking_create(*, user_id: uuid,
+                   customer_name: str,
+                   customer_id_number: str,
                    check_in: str,
                    check_out: str,
                    total_price: decimal,
@@ -61,6 +67,8 @@ def booking_create(*, user_id: uuid,
 
     booking = Booking.objects.create(user_id=user_id,
                                      booking_number=booking_number,
+                                     customer_name=customer_name,
+                                     customer_id_number=customer_id_number,
                                      check_in=check_in,
                                      check_out=check_out,
                                      total_price=total_price,

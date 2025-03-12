@@ -16,8 +16,7 @@ urlpatterns = [
     path('jwt/verify/',     CustomTokenVerifyView.as_view()),
     path('logout/',         LogoutView.as_view()),
 
-    path('me/', user_views.me, name='me'),
-
+    path('me/',             user_apis.UserDetailApi.as_view()),
     path('users/',          user_apis.UserListApi.as_view()),
 
     path('admin/list',         admin_apis.AdminListApi.as_view()),

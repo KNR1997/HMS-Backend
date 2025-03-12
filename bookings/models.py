@@ -11,7 +11,9 @@ from hotels.models import Room
 class Booking(BaseModel):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     booking_number = models.IntegerField(null=True, unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings", null=True)
+    customer_name = models.CharField(max_length=255, null=True, unique=True)
+    customer_id_number = models.CharField(max_length=255, null=True, unique=True)
     # room = models.ForeignKey(Room, on_delete=models.CASCADE)
     check_in = models.DateField()
     check_out = models.DateField()
