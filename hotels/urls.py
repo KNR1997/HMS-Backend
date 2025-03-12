@@ -11,7 +11,10 @@ urlpatterns = [
 
     path('room-categories/',                                room_category_apis.RoomCategoryListApi.as_view()),
     path('room-categories/create',                          room_category_apis.RoomCategoryCreateApi.as_view()),
-    path('room-categories/<slug:slug>',                     room_category_apis.RoomCategoryDetailApi.as_view()),
+    path('room-categories/<slug:slug>',                     room_category_apis.AdminRoomCategoryDetailApi.as_view()),
     path('room-categories/<str:slug>/update',               room_category_apis.RoomCategoryUpdateApi.as_view()),
     path('room-categories/<str:room_category_id>/delete',   room_category_apis.RoomCategoryDeleteApi.as_view()),
+
+    path('web/room-categories/<slug:slug>',                 room_category_apis.PublicRoomCategoryDetailApi.as_view()),
+
 ]

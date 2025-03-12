@@ -10,8 +10,11 @@ from hotels.models import Room
 # Create your models here.
 class Booking(BaseModel):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    booking_number = models.IntegerField(null=True, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings", null=True)
+    customer_name = models.CharField(max_length=255, null=True, unique=True)
+    customer_id_number = models.CharField(max_length=255, null=True, unique=True)
+    # room = models.ForeignKey(Room, on_delete=models.CASCADE)
     check_in = models.DateField()
     check_out = models.DateField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -22,7 +25,7 @@ class Booking(BaseModel):
     )
 
     def __str__(self):
-        return f"Booking {self.id} - {self.user.username}"
+        return f"Booking {self.booking_number} - {self.user.username}"
 
 
 class BookingItem(models.Model):

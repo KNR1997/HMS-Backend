@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -37,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'order.apps.OrderConfig',
     'import_export',
     'corsheaders',
     'rest_framework',
@@ -45,12 +45,14 @@ INSTALLED_APPS = [
     'accounts',
     'bookings',
     'hotels',
-    'products',
-    'shops',
     'common',
+    'configurations',
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Require authentication by default
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -109,6 +111,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
     "http://localhost:3002",
 ]
 
@@ -206,7 +209,26 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
+if DEBUG:  # If DEBUG is True
+    # STATIC LOCAL CONFIG
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/library/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'library')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    # END STATIC LOCAL CONFIG
+else:  # If DEBUG is False
+    # STATIC LOCAL CONFIG
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/library/'
+    MEDIA_ROOT = '/var/www/api/library'
+    STATIC_ROOT = '/var/www/api/staticfiles'
+    # END STATIC LOCAL CONFIG
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

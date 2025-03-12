@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 
 from accounts.selectors import user_get
 from common.utils import parse_search_query, get_paginated_response
+from hotels.models import Room
 from hotels.selectors import room_get, room_category_list, room_category_get_by_slug
 from hotels.services.room_category_services import room_category_create, room_category_update, room_category_delete
 from hotels.services.room_services import room_update, room_delete
@@ -23,6 +24,7 @@ class RoomCategoryListApi(APIView):
         id = serializers.UUIDField(required=True)
         name = serializers.CharField(required=True)
         slug = serializers.CharField(required=True)
+        image =serializers.JSONField(required=True)
         description = serializers.CharField(required=True)
         capacity = serializers.IntegerField(required=True)
         price_per_night = serializers.DecimalField(required=True, max_digits=10, decimal_places=2)
@@ -49,11 +51,12 @@ class RoomCategoryListApi(APIView):
         )
 
 
-class RoomCategoryDetailApi(APIView):
+class AdminRoomCategoryDetailApi(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.CharField()
         name = serializers.CharField()
         slug = serializers.CharField()
+        image = serializers.JSONField()
         description = serializers.CharField()
         capacity = serializers.IntegerField()
         price_per_night = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -69,10 +72,38 @@ class RoomCategoryDetailApi(APIView):
         return Response(data)
 
 
+class PublicRoomCategoryDetailApi(APIView):
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.CharField()
+        name = serializers.CharField()
+        slug = serializers.CharField()
+        image = serializers.JSONField()
+        description = serializers.CharField()
+        capacity = serializers.IntegerField()
+        price_per_night = serializers.DecimalField(max_digits=10, decimal_places=2)
+        room_numbers = serializers.SerializerMethodField()
+
+        def get_room_numbers(self, obj):
+            # Fetch all rooms associated with the RoomCategory
+            rooms = Room.objects.filter(category=obj)
+            # Extract and return the room numbers
+            return [room.room_number for room in rooms]
+
+    def get(self, request, slug):
+        room_category = room_category_get_by_slug(slug)
+
+        if room_category is None:
+            raise Http404
+
+        data = self.OutputSerializer(room_category).data
+
+        return Response(data)
+
 class RoomCategoryCreateApi(APIView):
     class InputSerializer(serializers.Serializer):
         name = serializers.CharField(required=True)
         slug = serializers.CharField(required=True)
+        image = serializers.JSONField()
         description = serializers.CharField(required=True, allow_null=True, allow_blank=True)
         capacity = serializers.CharField(required=True)
         price_per_night = serializers.CharField(required=True)
@@ -113,7 +144,7 @@ class RoomCategoryUpdateApi(APIView):
         # Usually, this is how we approach things, when building APIs at first
         # But at the very moment when we need to make a change to the output,
         # that's specific to this API, we'll introduce a separate OutputSerializer just for this API
-        data = RoomCategoryDetailApi.OutputSerializer(room_category).data
+        data = AdminRoomCategoryDetailApi.OutputSerializer(room_category).data
 
         return Response(data)
 
