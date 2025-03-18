@@ -1,5 +1,6 @@
 # Client User Serializer
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from accounts.models import User
 
@@ -19,11 +20,11 @@ class ClientUserSerializer(serializers.ModelSerializer):
 
     def get_role(self, obj):
         # Return only the group names
-        return 'super_admin'
+        return 'super_admin' if obj.is_superuser else 'store_owner'
 
     def get_permissions(self, obj):
         # Return only the group names
-        return ['super_admin']
+        return ['super_admin'] if obj.is_superuser else ['store_owner']
 
 
 class MeSerializer(serializers.ModelSerializer):

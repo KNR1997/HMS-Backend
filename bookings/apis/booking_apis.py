@@ -134,7 +134,7 @@ class BookingUpdateApi(APIView):
         if booking is None:
             raise Http404
 
-        booking = booking_update(booking=booking, data=serializer.validated_data, updated_by=user)
+        booking = booking_update(booking=booking, data=serializer.validated_data)
 
         data = ProcessBookingApi.OutputSerializer(booking).data
 

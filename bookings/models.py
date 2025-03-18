@@ -11,7 +11,7 @@ from hotels.models import Room
 class Booking(BaseModel):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
     booking_number = models.IntegerField(null=True, unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings", null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings", null=True, blank=True)
     customer_name = models.CharField(max_length=255, null=True, unique=True)
     customer_id_number = models.CharField(max_length=255, null=True, unique=True)
     # room = models.ForeignKey(Room, on_delete=models.CASCADE)
@@ -20,12 +20,13 @@ class Booking(BaseModel):
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(
         max_length=20,
-        choices=[("Pending", "Pending"), ("Confirmed", "Confirmed"), ("Cancelled", "Cancelled")],
+        choices=[("Pending", "Pending"), ("Confirmed", "Confirmed"), ("Cancelled", "Cancelled"), ("CheckIn", "CheckIn"),
+                 ("CheckOut", "CheckOut")],
         default="Pending",
     )
 
     def __str__(self):
-        return f"Booking {self.booking_number} - {self.user.username}"
+        return f"Booking {self.booking_number}"
 
 
 class BookingItem(models.Model):

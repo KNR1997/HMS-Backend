@@ -78,19 +78,23 @@ def booking_create(*, user_id: uuid,
 
 
 @transaction.atomic
-def booking_update(*, booking: Booking, data, updated_by: User) -> Booking:
+def booking_update(*, booking: Booking, data) -> Booking:
     non_side_effect_fields: List[str] = [
         "status",
     ]
 
+    previous_status = booking.status  # Store previous status before updating
+
     # all_fields = non_side_effect_fields + ["type", "department", "parent"]
     booking, has_updated = model_update(instance=booking, fields=non_side_effect_fields, data=data)
 
-    # Side-effect fields update here (e.g. username is generated based on first & last name)
-
-    # ... some additional tasks with the user ...
-    # if "updated_by" not in non_side_effect_fields:
-    #     room.save(update_fields=["updated_by"])
+    # If status changed to "CheckOut" or "Cancelled", update all associated rooms to is_available=True
+    if has_updated and previous_status not in ["CheckOut", "Cancelled"] and booking.status in ["CheckOut", "Cancelled"]:
+        booking_items = booking.booking_items.all()
+        for booking_item in booking_items:
+            if booking_item.room:  # Ensure room exists before updating
+                booking_item.room.is_available = True
+                booking_item.room.save(update_fields=["is_available"])
 
     return booking
 
