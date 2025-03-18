@@ -52,3 +52,9 @@ def room_category_get_by_slug(slug) -> Optional[RoomCategory]:
     room_category = get_object(RoomCategory, slug=slug)
 
     return room_category
+
+
+def hotel_get() -> Optional[Hotel]:
+    hotel = Hotel.objects.first()
+
+    return hotel

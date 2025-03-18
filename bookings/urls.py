@@ -17,5 +17,6 @@ urlpatterns = [
     path('analytics/total-rooms',                   reports.total_rooms_report),
     path('analytics/available-rooms',               reports.available_rooms_report),
     path('analytics/room-categories',               reports.room_categories_report),
+    path('analytics/bookings',                      reports.bookings_report),
 
 ]
