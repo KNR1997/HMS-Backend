@@ -5,7 +5,6 @@ from typing import List
 from django.db import transaction
 from django.db.models import Max
 
-from accounts.models import User
 from bookings.models import Booking
 from bookings.services.booking_items_services import booking_item_create
 from bookings.utils.calculations import calculate_total_price
@@ -21,6 +20,7 @@ def process_booking(*, user_id: uuid = None,
                     check_in: str,
                     check_out: str,
                     booking_items: list[str],
+                    status: str = None,
                     ) -> Booking:
     # Calculate the total price
     total_price = calculate_total_price(booking_items=booking_items, check_in=check_in, check_out=check_out)
@@ -32,6 +32,7 @@ def process_booking(*, user_id: uuid = None,
                              check_in=check_in,
                              check_out=check_out,
                              total_price=total_price,
+                             status=status,
                              )
 
     # Create booking items and mark rooms as unavailable
@@ -57,6 +58,7 @@ def booking_create(*, user_id: uuid,
                    check_in: str,
                    check_out: str,
                    total_price: decimal,
+                   status: str = None,
                    ) -> Booking:
     # Find the maximum booking_number in the database
     max_booking_number = Booking.objects.aggregate(Max('booking_number'))['booking_number__max']
@@ -72,25 +74,30 @@ def booking_create(*, user_id: uuid,
                                      check_in=check_in,
                                      check_out=check_out,
                                      total_price=total_price,
+                                     status=status,
                                      )
 
     return booking
 
 
 @transaction.atomic
-def booking_update(*, booking: Booking, data, updated_by: User) -> Booking:
+def booking_update(*, booking: Booking, data) -> Booking:
     non_side_effect_fields: List[str] = [
         "status",
     ]
 
+    previous_status = booking.status  # Store previous status before updating
+
     # all_fields = non_side_effect_fields + ["type", "department", "parent"]
     booking, has_updated = model_update(instance=booking, fields=non_side_effect_fields, data=data)
 
-    # Side-effect fields update here (e.g. username is generated based on first & last name)
-
-    # ... some additional tasks with the user ...
-    # if "updated_by" not in non_side_effect_fields:
-    #     room.save(update_fields=["updated_by"])
+    # If status changed to "CheckOut" or "Cancelled", update all associated rooms to is_available=True
+    if has_updated and previous_status not in ["CheckOut", "Cancelled"] and booking.status in ["CheckOut", "Cancelled"]:
+        booking_items = booking.booking_items.all()
+        for booking_item in booking_items:
+            if booking_item.room:  # Ensure room exists before updating
+                booking_item.room.is_available = True
+                booking_item.room.save(update_fields=["is_available"])
 
     return booking
 

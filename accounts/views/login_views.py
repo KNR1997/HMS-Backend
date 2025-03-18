@@ -11,51 +11,33 @@ from accounts.serializers import ClientUserSerializer, RegisterSerializer
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-
     def validate(self, attrs):
         data = super().validate(attrs)
 
-        serializer = ClientUserSerializer(self.user).data
+        user = self.user  # Get the authenticated user
 
-        for k, v in serializer.items():
-            data[k] = v
+        # Get user groups
+        groups = list(user.groups.values_list("name", flat=True))
+        # data["groups"] = groups
 
-        # you can add your more data with this and return
-        # data['first_name'] = self.user.first_name
-        # data['last_name'] = self.user.last_name
+        # Set the role as the first group, or None if no groups exist
+        data["role"] = groups[0] if groups else None
+
+        # Get user permissions
+        data["permissions"] = groups
+
+        # Get user groups
+        # data["groups"] = list(user.groups.values_list("name", flat=True))
+
+        # Get user permissions
+        # data["permissions"] = list(user.user_permissions.values_list("codename", flat=True))
+        # data["permissions"] = list(user.groups.values_list("name", flat=True))
 
         return data
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-
-        if response.status_code == 200:
-            access_token = response.data.get('access')
-            refresh_token = response.data.get('refresh')
-
-            response.set_cookie(
-                'access',
-                access_token,
-                # max_age=settings.ACCESS_TOKEN_LIFETIME,
-                # path=settings.AUTH_COOKIE_PATH,
-                # secure=settings.AUTH_COOKIE_SECURE,
-                # httponly=settings.AUTH_COOKIE_HTTP_ONLY,
-                # samesite=settings.AUTH_COOKIE_SAMESITE
-            )
-            response.set_cookie(
-                'refresh',
-                refresh_token,
-                # max_age=settings.REFRESH_TOKEN_LIFETIME,
-                # path=settings.AUTH_COOKIE_PATH,
-                # secure=settings.AUTH_COOKIE_SECURE,
-                # httponly=settings.AUTH_COOKIE_HTTP_ONLY,
-                # samesite=settings.AUTH_COOKIE_SAMESITE
-            )
-        return response
 
 
 class CustomTokenRefreshView(TokenRefreshView):

@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import F, Q
 from django.utils import timezone
 
-from accounts.models import User
+# from accounts.models import BaseUser
 
 
 class BaseModel(models.Model):
@@ -44,18 +44,18 @@ class RandomModel(BaseModel):
         ]
 
 
-class AuditableModel(models.Model):
-    """
-    Abstract model that tracks who created and last updated a record.
-    Inherits timestamp fields from BaseModel.
-    """
-
-    created_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="created_%(class)s"
-    )
-    updated_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="updated_%(class)s"
-    )
-
-    class Meta:
-        abstract = True
+# class AuditableModel(models.Model):
+#     """
+#     Abstract model that tracks who created and last updated a record.
+#     Inherits timestamp fields from BaseModel.
+#     """
+#
+#     created_by = models.ForeignKey(
+#         BaseUser, on_delete=models.SET_NULL, null=True, blank=True, related_name="created_%(class)s"
+#     )
+#     updated_by = models.ForeignKey(
+#         BaseUser, on_delete=models.SET_NULL, null=True, blank=True, related_name="updated_%(class)s"
+#     )
+#
+#     class Meta:
+#         abstract = True

@@ -1,0 +1,183 @@
+import openpyxl
+from openpyxl.styles import PatternFill, Font, Alignment
+from django.http import JsonResponse, HttpResponse
+from io import BytesIO
+
+from openpyxl.utils import get_column_letter
+
+from hotels.models import RoomCategory
+from .models import Room  # Assuming Room model exists
+
+
+def total_rooms_report(request):
+    try:
+        # Get all the rooms data
+        rooms = Room.objects.all()
+
+        # Create a new workbook and select the active sheet
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Total Rooms Report"
+
+        # Add headers with styling
+        headers = ["Room Number", "Room Category", "Available"]
+        header_fill = PatternFill(start_color="FFC000", end_color="FFC000", fill_type="solid")
+        header_font = Font(bold=True)
+        header_alignment = Alignment(horizontal="center", vertical="center")
+
+        report_title = "Rooms Report"
+        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
+        title_cell = ws.cell(row=1, column=1, value=report_title)
+        title_cell.font = Font(size=14, bold=True)
+        title_cell.alignment = Alignment(horizontal="center", vertical="center")
+
+        header_row = 2
+        for col_num, header in enumerate(headers, 1):
+            cell = ws.cell(row=header_row, column=col_num, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = header_alignment
+
+        # Start writing data below the headers
+        row_num = header_row + 1
+        for data in rooms:
+            ws.cell(row=row_num, column=1, value=data.room_number)  # Example: Room number
+            ws.cell(row=row_num, column=2, value=data.category.name)  # Example: Room type
+            ws.cell(row=row_num, column=3, value=data.is_available)  # Example: Status
+            # ws.cell(row=row_num, column=4, value=data.price)  # Example: Price
+            row_num += 1
+
+        # Adjust column widths
+        for col_num, _ in enumerate(headers, 1):
+            col_letter = get_column_letter(col_num)
+            ws.column_dimensions[col_letter].width = 18
+
+        # Save workbook to a BytesIO stream
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Prepare response with Excel file
+        response = HttpResponse(output,
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="total_rooms_report.xlsx"'
+        return response
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error_message': f'Error generating total rooms report Excel: {str(e)}'})
+
+
+def available_rooms_report(request):
+    try:
+        # Get all the rooms data
+        rooms = Room.objects.filter(is_available=True)
+
+        # Create a new workbook and select the active sheet
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Available Rooms Report"
+
+        # Add headers with styling
+        headers = ["Room Number", "Room Category", "Available"]
+        header_fill = PatternFill(start_color="FFC000", end_color="FFC000", fill_type="solid")
+        header_font = Font(bold=True)
+        header_alignment = Alignment(horizontal="center", vertical="center")
+
+        report_title = "Available Rooms Report"
+        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
+        title_cell = ws.cell(row=1, column=1, value=report_title)
+        title_cell.font = Font(size=14, bold=True)
+        title_cell.alignment = Alignment(horizontal="center", vertical="center")
+
+        header_row = 2
+        for col_num, header in enumerate(headers, 1):
+            cell = ws.cell(row=header_row, column=col_num, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = header_alignment
+
+        # Start writing data below the headers
+        row_num = header_row + 1
+        for data in rooms:
+            ws.cell(row=row_num, column=1, value=data.room_number)  # Example: Room number
+            ws.cell(row=row_num, column=2, value=data.category.name)  # Example: Room type
+            ws.cell(row=row_num, column=3, value=data.is_available)  # Example: Status
+            # ws.cell(row=row_num, column=4, value=data.price)  # Example: Price
+            row_num += 1
+
+        # Adjust column widths
+        for col_num, _ in enumerate(headers, 1):
+            col_letter = get_column_letter(col_num)
+            ws.column_dimensions[col_letter].width = 18
+
+        # Save workbook to a BytesIO stream
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Prepare response with Excel file
+        response = HttpResponse(output,
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="available_rooms_report.xlsx"'
+        return response
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error_message': f'Error generating available rooms report Excel: {str(e)}'})
+
+
+def room_categories_report(request):
+    try:
+        # Get all the rooms data
+        room_categories = RoomCategory.objects.all()
+
+        # Create a new workbook and select the active sheet
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Room Categories Report"
+
+        # Add headers with styling
+        headers = ["Name", "Capacity", "Price per Night"]
+        header_fill = PatternFill(start_color="FFC000", end_color="FFC000", fill_type="solid")
+        header_font = Font(bold=True)
+        header_alignment = Alignment(horizontal="center", vertical="center")
+
+        report_title = "Room Categories Report"
+        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
+        title_cell = ws.cell(row=1, column=1, value=report_title)
+        title_cell.font = Font(size=14, bold=True)
+        title_cell.alignment = Alignment(horizontal="center", vertical="center")
+
+        header_row = 2
+        for col_num, header in enumerate(headers, 1):
+            cell = ws.cell(row=header_row, column=col_num, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = header_alignment
+
+        # Start writing data below the headers
+        row_num = header_row + 1
+        for data in room_categories:
+            ws.cell(row=row_num, column=1, value=data.name)  # Example: Room number
+            ws.cell(row=row_num, column=2, value=data.capacity)  # Example: Room type
+            ws.cell(row=row_num, column=3, value=data.price_per_night)  # Example: Status
+            # ws.cell(row=row_num, column=4, value=data.price)  # Example: Price
+            row_num += 1
+
+        # Adjust column widths
+        for col_num, _ in enumerate(headers, 1):
+            col_letter = get_column_letter(col_num)
+            ws.column_dimensions[col_letter].width = 18
+
+        # Save workbook to a BytesIO stream
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        # Prepare response with Excel file
+        response = HttpResponse(output,
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="room_categories_report.xlsx"'
+        return response
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error_message': f'Error generating room categories report Excel: {str(e)}'})

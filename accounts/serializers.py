@@ -1,7 +1,7 @@
 # Client User Serializer
 from rest_framework import serializers
 
-from accounts.models import User
+from accounts.models import BaseUser
 
 
 class ClientUserSerializer(serializers.ModelSerializer):
@@ -10,7 +10,7 @@ class ClientUserSerializer(serializers.ModelSerializer):
     permissions = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = User
+        model = BaseUser
         fields = ['permissions', 'role', 'username']
 
     # def get_permissions(self, obj):
@@ -19,18 +19,18 @@ class ClientUserSerializer(serializers.ModelSerializer):
 
     def get_role(self, obj):
         # Return only the group names
-        return 'super_admin'
+        return 'super_admin' if obj.is_superuser else 'store_owner'
 
     def get_permissions(self, obj):
         # Return only the group names
-        return ['super_admin']
+        return ['super_admin'] if obj.is_superuser else ['store_owner']
 
 
 class MeSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = User
+        model = BaseUser
         fields = ['name']
 
     def get_name(self, obj):
@@ -41,9 +41,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
 
     class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
+        model = BaseUser
+        fields = ['id', 'email', 'password']
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
+        user = BaseUser.objects.create_user(**validated_data)
         return user

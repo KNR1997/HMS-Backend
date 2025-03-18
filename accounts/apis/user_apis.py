@@ -15,11 +15,8 @@ class UserListApi(APIView):
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.UUIDField(required=True)
-        username = serializers.CharField(required=True)
-        first_name = serializers.CharField(required=True)
-        last_name = serializers.CharField(required=True)
         email = serializers.CharField(required=True)
-        is_staff = serializers.CharField(required=True)
+        # is_staff = serializers.CharField(required=True)
         is_active = serializers.CharField(required=True)
 
     def get(self, request):
@@ -35,8 +32,6 @@ class UserListApi(APIView):
         filters_serializer.is_valid(raise_exception=True)
 
         users = user_list(filters=None)
-
-        first_user = users.first()
 
         # Apply pagination
         return get_paginated_response(

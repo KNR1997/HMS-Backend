@@ -2,7 +2,7 @@ from typing import List
 
 from django.db import transaction
 
-from accounts.models import User
+from accounts.models import BaseUser
 from common.services import model_update
 from common.utils import get_object
 from configurations.models import FAQ
@@ -26,7 +26,7 @@ def faq_create(*, faq_title: str,
 
 
 @transaction.atomic
-def faq_update(*, faq: FAQ, data, updated_by: User) -> FAQ:
+def faq_update(*, faq: FAQ, data, updated_by: BaseUser) -> FAQ:
     non_side_effect_fields: List[str] = [
         "faq_title",
         "slug",
