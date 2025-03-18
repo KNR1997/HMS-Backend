@@ -4,7 +4,7 @@ from typing import List
 from django.db import transaction
 from rest_framework.exceptions import ValidationError
 
-from accounts.models import User
+from accounts.models import BaseUser
 from common.services import model_update
 from common.utils import get_object
 from hotels.models import Room
@@ -34,7 +34,7 @@ def room_create(*, category_id: uuid.UUID,
 
 
 @transaction.atomic
-def room_update(*, room: Room, data, updated_by: User) -> Room:
+def room_update(*, room: Room, data, updated_by: BaseUser) -> Room:
     non_side_effect_fields: List[str] = [
         "name",
         "slug",

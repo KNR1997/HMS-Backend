@@ -5,7 +5,6 @@ from typing import List
 from django.db import transaction
 from django.db.models import Max
 
-from accounts.models import User
 from bookings.models import Booking
 from bookings.services.booking_items_services import booking_item_create
 from bookings.utils.calculations import calculate_total_price
@@ -21,6 +20,7 @@ def process_booking(*, user_id: uuid = None,
                     check_in: str,
                     check_out: str,
                     booking_items: list[str],
+                    status: str = None,
                     ) -> Booking:
     # Calculate the total price
     total_price = calculate_total_price(booking_items=booking_items, check_in=check_in, check_out=check_out)
@@ -32,6 +32,7 @@ def process_booking(*, user_id: uuid = None,
                              check_in=check_in,
                              check_out=check_out,
                              total_price=total_price,
+                             status=status,
                              )
 
     # Create booking items and mark rooms as unavailable
@@ -57,6 +58,7 @@ def booking_create(*, user_id: uuid,
                    check_in: str,
                    check_out: str,
                    total_price: decimal,
+                   status: str = None,
                    ) -> Booking:
     # Find the maximum booking_number in the database
     max_booking_number = Booking.objects.aggregate(Max('booking_number'))['booking_number__max']
@@ -72,6 +74,7 @@ def booking_create(*, user_id: uuid,
                                      check_in=check_in,
                                      check_out=check_out,
                                      total_price=total_price,
+                                     status=status,
                                      )
 
     return booking

@@ -14,21 +14,17 @@ class AdminListApi(APIView):
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.UUIDField(required=True)
-        username = serializers.CharField(required=True)
-        first_name = serializers.CharField(required=True)
-        last_name = serializers.CharField(required=True)
         email = serializers.CharField(required=True)
-        is_staff = serializers.CharField(required=True)
         is_active = serializers.CharField(required=True)
-        permissions = serializers.SerializerMethodField()
+        # permissions = serializers.SerializerMethodField()
 
-        @staticmethod
-        def get_permissions(obj):
-            # Return a list of permission types for the user
-            return [
-                {"name": permission.permission_type, "index": index}
-                for index, permission in enumerate(obj.permissions.all())
-            ]
+        # @staticmethod
+        # def get_permissions(obj):
+        #     # Return a list of permission types for the user
+        #     return [
+        #         {"name": permission.permission_type, "index": index}
+        #         for index, permission in enumerate(obj.permissions.all())
+        #     ]
 
     def get(self, request):
         # Extract `search` query parameter

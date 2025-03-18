@@ -4,7 +4,7 @@ from typing import List
 
 from django.db import transaction
 
-from accounts.models import User
+from accounts.models import BaseUser
 from common.services import model_update
 from common.utils import get_object
 from hotels.models import RoomCategory
@@ -30,7 +30,7 @@ def room_category_create(*, name: str,
 
 
 @transaction.atomic
-def room_category_update(*, room_category: RoomCategory, data, updated_by: User) -> RoomCategory:
+def room_category_update(*, room_category: RoomCategory, data, updated_by: BaseUser) -> RoomCategory:
     non_side_effect_fields: List[str] = [
         "name",
         "slug",

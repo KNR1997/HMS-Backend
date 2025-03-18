@@ -2,27 +2,27 @@ from typing import Optional
 
 from django.db.models import QuerySet
 
-from accounts.models import User
+from accounts.models import BaseUser
 from common.utils import get_object
 
 
-def user_get(user_id) -> Optional[User]:
-    user = get_object(User, id=user_id)
+def user_get(user_id) -> Optional[BaseUser]:
+    user = get_object(BaseUser, id=user_id)
 
     return user
 
 
-def user_list(*, filters=None) -> QuerySet[User]:
+def user_list(*, filters=None) -> QuerySet[BaseUser]:
     filters = filters or {}
 
-    qs = User.objects.all()
+    qs = BaseUser.objects.all()
 
     return qs
 
 
-def admin_list(*, filters=None) -> QuerySet[User]:
+def admin_list(*, filters=None) -> QuerySet[BaseUser]:
     filters = filters or {}
 
-    qs = User.objects.filter(is_staff=True)
+    qs = BaseUser.objects.filter(is_admin=True)
 
     return qs

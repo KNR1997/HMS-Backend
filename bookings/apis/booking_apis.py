@@ -39,6 +39,7 @@ class ProcessBookingFromAdminApi(APIView):
         check_in = serializers.CharField(required=True)
         check_out = serializers.CharField(required=True)
         booking_items = serializers.ListField(required=True)
+        status = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.UUIDField()
@@ -63,7 +64,7 @@ class BookingListApi(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.UUIDField(required=True)
         booking_number = serializers.IntegerField(required=True)
-        user = serializers.CharField(required=True)
+        customer_name = serializers.CharField(required=True)
         check_in = serializers.DateField(required=True)
         check_out = serializers.DateField(required=True)
         total_price = serializers.DecimalField(required=True, max_digits=10, decimal_places=2)
