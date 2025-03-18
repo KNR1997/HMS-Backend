@@ -12,7 +12,7 @@ class Hotel(BaseModel):
     location = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     rating = models.FloatField(default=0.0)
-    amenities = models.TextField(help_text="Comma-separated list of amenities")
+    amenities = models.TextField(help_text="Comma-separated list of amenities", null=True, blank=True)
     image = models.JSONField(default=dict, blank=True, null=True)
 
     def __str__(self):

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from hotels.apis import room_apis, room_category_apis
+from hotels.apis import room_apis, room_category_apis, hotel_apis
 
 urlpatterns = [
     path('rooms/',                                          room_apis.RoomListApi.as_view()),
@@ -16,5 +16,8 @@ urlpatterns = [
     path('room-categories/<str:room_category_id>/delete',   room_category_apis.RoomCategoryDeleteApi.as_view()),
 
     path('web/room-categories/<slug:slug>',                 room_category_apis.PublicRoomCategoryDetailApi.as_view()),
+
+    path('hotels',                                          hotel_apis.HotelDetailApi.as_view()),
+    path('hotel/update',                                    hotel_apis.HotelUpdateApi.as_view()),
 
 ]
