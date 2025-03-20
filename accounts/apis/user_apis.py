@@ -48,6 +48,7 @@ class UserDetailApi(APIView):
         first_name = serializers.CharField(required=False)
         last_name = serializers.CharField(required=False)
         email = serializers.EmailField(required=False)
+        is_admin = serializers.BooleanField(required=True)
 
     def get(self, request):
         # Get the currently authenticated user

@@ -16,7 +16,7 @@ class RoomListApi(APIView):
 
     class FilterSerializer(serializers.Serializer):
         id = serializers.IntegerField(required=False)
-        name = serializers.CharField(required=False)
+        category = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.UUIDField(required=True)
