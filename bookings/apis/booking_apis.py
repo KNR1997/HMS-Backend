@@ -5,8 +5,9 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from bookings.selectors import booking_list, booking_get_by_booking_number
-from bookings.services.booking_services import process_booking, booking_update, booking_delete
+from bookings.selectors import booking_list, booking_get_by_booking_number, my_booking_list
+from bookings.services.booking_services import process_booking, booking_update, booking_delete, \
+    process_booking_by_customer
 from common.utils import parse_search_query, get_paginated_response
 
 
@@ -54,6 +55,35 @@ class ProcessBookingFromAdminApi(APIView):
         return Response(self.OutputSerializer(booking).data)
 
 
+class ProcessBookingByCustomerApi(APIView):
+    # permission_classes = [IsAdminUser]
+
+    class InputSerializer(serializers.Serializer):
+        customer_name = serializers.CharField(required=True)
+        customer_id_number = serializers.CharField(required=True)
+        check_in = serializers.CharField(required=True)
+        check_out = serializers.CharField(required=True)
+        booking_items = serializers.ListField(required=True)
+        status = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.UUIDField()
+
+    @transaction.atomic
+    def post(self, request):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+
+        booking = process_booking_by_customer(
+            user=user,
+            **serializer.validated_data
+        )
+
+        return Response(self.OutputSerializer(booking).data)
+
+
 class BookingListApi(APIView):
     # permission_classes = [AllowAny]
 
@@ -83,6 +113,49 @@ class BookingListApi(APIView):
         filters_serializer.is_valid(raise_exception=True)
 
         bookings = booking_list(filters=filters_serializer.validated_data)
+
+        # Apply pagination
+        return get_paginated_response(
+            serializer_class=self.OutputSerializer,
+            queryset=bookings,
+            request=request,
+        )
+
+
+class MyBookingListApi(APIView):
+    # permission_classes = [AllowAny]
+
+    class FilterSerializer(serializers.Serializer):
+        id = serializers.IntegerField(required=False)
+        name = serializers.CharField(required=False)
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.UUIDField(required=True)
+        booking_number = serializers.IntegerField(required=True)
+        customer_name = serializers.CharField(required=True)
+        check_in = serializers.DateField(required=True)
+        check_out = serializers.DateField(required=True)
+        total_price = serializers.DecimalField(required=True, max_digits=10, decimal_places=2)
+        status = serializers.CharField(required=True)
+
+    def get(self, request):
+        # Extract `search` query parameter
+        query_params = request.query_params
+        search_query = query_params.get("search", None)
+
+        # Parse `search` using the utility function
+        filters = parse_search_query(search_query)
+
+        # Make sure the filters are valid, if passed
+        filters_serializer = self.FilterSerializer(data={**request.query_params, **filters})
+        filters_serializer.is_valid(raise_exception=True)
+
+        user = request.user
+
+        bookings = my_booking_list(
+            filters=filters_serializer.validated_data,
+            user=user
+        )
 
         # Apply pagination
         return get_paginated_response(

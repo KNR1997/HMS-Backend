@@ -5,6 +5,7 @@ from typing import List
 from django.db import transaction
 from django.db.models import Max
 
+from accounts.models import BaseUser
 from bookings.models import Booking
 from bookings.services.booking_items_services import booking_item_create
 from bookings.utils.calculations import calculate_total_price
@@ -15,8 +16,8 @@ from hotels.selectors import room_get_by_room_number
 
 @transaction.atomic
 def process_booking(*, user_id: uuid = None,
-                    customer_name: str = None,
-                    customer_id_number: str = None,
+                    customer_name: str,
+                    customer_id_number: str,
                     check_in: str,
                     check_out: str,
                     booking_items: list[str],
@@ -33,6 +34,44 @@ def process_booking(*, user_id: uuid = None,
                              check_out=check_out,
                              total_price=total_price,
                              status=status,
+                             )
+
+    # Create booking items and mark rooms as unavailable
+    for booking_item in booking_items:
+        room = room_get_by_room_number(room_number=booking_item.get('room_number'))
+        room_category = room.category
+
+        booking_item_create(booking=booking,
+                            room=room,
+                            price_per_night=room_category.price_per_night,
+                            )
+
+        room.is_available = False
+        room.save()
+
+    return booking
+
+
+@transaction.atomic
+def process_booking_by_customer(*, user: BaseUser,
+                                customer_name: str,
+                                customer_id_number: str,
+                                check_in: str,
+                                check_out: str,
+                                booking_items: list[str],
+                                status: str = None,
+                                ) -> Booking:
+    # Calculate the total price
+    total_price = calculate_total_price(booking_items=booking_items, check_in=check_in, check_out=check_out)
+
+    # Create the booking
+    booking = booking_create(user_id=user.id,
+                             customer_name=customer_name,
+                             customer_id_number=customer_id_number,
+                             check_in=check_in,
+                             check_out=check_out,
+                             total_price=total_price,
+                             status='Pending',
                              )
 
     # Create booking items and mark rooms as unavailable

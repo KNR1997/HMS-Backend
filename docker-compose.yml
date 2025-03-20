@@ -1,0 +1,9 @@
+name: inventory-service
+services:
+  app:
+    image: inventory-service-image
+    container_name: inventory-service-container
+    ports:
+      - "8001:8000"
+    volumes:
+      - .:/app
