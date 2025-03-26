@@ -2,6 +2,7 @@ from typing import Optional
 
 from django.db.models import QuerySet
 
+from accounts.filters import BaseUserFilter
 from accounts.models import BaseUser
 from common.utils import get_object
 
@@ -17,7 +18,7 @@ def user_list(*, filters=None) -> QuerySet[BaseUser]:
 
     qs = BaseUser.objects.all()
 
-    return qs
+    return BaseUserFilter(filters, qs).qs
 
 
 def admin_list(*, filters=None) -> QuerySet[BaseUser]:

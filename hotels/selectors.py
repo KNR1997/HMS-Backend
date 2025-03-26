@@ -3,7 +3,7 @@ from typing import Optional
 from django.db.models import QuerySet
 
 from common.utils import get_object
-from hotels.filters import BaseRoomFilter
+from hotels.filters import BaseRoomFilter, BaseRoomCategoryFilter
 from hotels.models import Room, RoomCategory, Hotel
 
 
@@ -40,7 +40,7 @@ def room_category_list(*, filters=None) -> QuerySet[RoomCategory]:
 
     qs = RoomCategory.objects.all()
 
-    return qs
+    return BaseRoomCategoryFilter(filters, qs).qs
 
 
 def room_category_get(room_category_id) -> Optional[RoomCategory]:

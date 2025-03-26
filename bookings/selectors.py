@@ -2,6 +2,7 @@ from typing import Optional
 
 from django.db.models import QuerySet
 
+from bookings.filters import BaseBookingFilter
 from bookings.models import Booking
 from common.utils import get_object
 
@@ -11,7 +12,7 @@ def booking_list(*, filters=None) -> QuerySet[Booking]:
 
     qs = Booking.objects.all()
 
-    return qs
+    return BaseBookingFilter(filters, qs).qs
 
 
 def my_booking_list(*, filters=None, user=None) -> QuerySet[Booking]:

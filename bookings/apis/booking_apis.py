@@ -89,7 +89,7 @@ class BookingListApi(APIView):
 
     class FilterSerializer(serializers.Serializer):
         id = serializers.IntegerField(required=False)
-        name = serializers.CharField(required=False)
+        customer_name = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.Serializer):
         id = serializers.UUIDField(required=True)
